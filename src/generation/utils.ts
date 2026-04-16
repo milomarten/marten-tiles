@@ -1,3 +1,5 @@
+export type Point = [number, number];
+
 /**
  * Some value with a certain amount of weight to it.
  * The weight is some number which represents how likely this value is.
@@ -37,6 +39,9 @@ export interface Grid<T> {
      * Move the grid such that the origin returns to absolute (0, 0)
      */
     centerOnOrigin(): Grid<T>;
+
+    width: number;
+    height: number;
 }
 
 /**
@@ -59,7 +64,6 @@ export class CellMap<T> implements Grid<T> {
         }
     }
 
-
     getItem(x: number, y: number): T | null {
         if (x < 0 || y < 0 || x >= this.width || y >= this.height) {
             return null;
@@ -78,6 +82,44 @@ export class CellMap<T> implements Grid<T> {
     centerOnOrigin(): Grid<T> {
         return this;
     }
+
+    forEach(func: (x: number, y: number, item: T) => void): void {
+        for (let i = 0; i < this.contents.length; i++) {
+            const resolvedY = Math.floor(i / this.width);
+            const resolvedX = i % this.width;
+            func(resolvedX, resolvedY, this.contents[i])
+        }
+    }
+
+    /**
+     * Flood paint the cells, starting at some point.
+     * Every cell with the same "color" as the starting point is affected; reaching a different
+     * "color", or the edge, will cause the flood to stop moving in that direction.
+     * Formally, this algorithm only floods up, down, left, and right. Thus, it will not cross diagonals.
+     * @param start The starting point
+     * @param paintWith The color to paint with.
+     */
+    flood(start: Point, paintWith: T): void {
+        const toPaint: Point[] = [];
+    
+        toPaint.push(start);
+        const startingColor = this.getItem(start[0], start[1])!;
+
+        while (toPaint.length > 0) {
+            const visiting = toPaint.pop()!;
+            this.setItem(visiting[0], visiting[1], paintWith);
+    
+            const left: Point = [visiting[0]-1, visiting[1]];
+            const right: Point = [visiting[0]+1, visiting[1]];
+            const up: Point = [visiting[0], visiting[1]-1];
+            const down: Point = [visiting[0], visiting[1]+1];
+    
+            if (this.getItem(left[0], left[1]) === startingColor) { toPaint.push(left); }
+            if (this.getItem(right[0], right[1]) === startingColor) { toPaint.push(right); }
+            if (this.getItem(up[0], up[1]) === startingColor) { toPaint.push(up); }
+            if (this.getItem(down[0], down[1]) === startingColor) { toPaint.push(down); }
+        }
+    }
 }
 
 class CellMapOffset<T> implements Grid<T>{
@@ -89,6 +131,14 @@ class CellMapOffset<T> implements Grid<T>{
         this.map = map;
         this.originX = originX;
         this.originY = originY;
+    }
+    
+    get width(): number {
+        return this.map.width;
+    }
+
+    get height(): number {
+        return this.map.height;
     }
 
     getItem(x: number, y: number): T | null {
