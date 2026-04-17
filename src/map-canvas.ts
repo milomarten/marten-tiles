@@ -20,10 +20,10 @@ export class MapCanvas extends LitElement {
 
     protected async firstUpdated() {
         const spec = {
-            width: 40,
-            height: 40,
+            width: 30,
+            height: 30,
             margin: 2,
-            extremeness: 4
+            extremeness: 3
         };
         const map = createRandomMap(spec);
         

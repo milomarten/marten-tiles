@@ -1,3 +1,6 @@
+/**
+ * Represents a 2D coordinate - [x, y]
+ */
 export type Point = [number, number];
 
 /**
@@ -42,6 +45,8 @@ export interface Grid<T> {
 
     width: number;
     height: number;
+
+    forEach(func: (x: number, y: number, item: T) => void): void;
 }
 
 /**
@@ -175,6 +180,10 @@ class CellMapOffset<T> implements Grid<T>{
 
     centerOnOrigin(): Grid<T> {
         return this.map;
+    }
+
+    forEach(func: (x: number, y: number, item: T) => void): void {
+        throw new Error("Method not implemented.");
     }
 }
 
