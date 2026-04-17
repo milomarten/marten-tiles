@@ -19,13 +19,17 @@ export class MapCanvas extends LitElement {
     }
 
     protected async firstUpdated() {
-        const map = createRandomMap({
-            width: 20,
-            height: 20
-        });
+        const spec = {
+            width: 40,
+            height: 40,
+            margin: 2,
+            extremeness: 4
+        };
+        const map = createRandomMap(spec);
         
-        this.canvas.height = 20 * 20;
-        this.canvas.width = 20 * 20;
+        this.canvas.height = 20 * spec.height;
+        this.canvas.width = 20 * spec.width;
+        this.canvas.setAttribute("canvas-spec", JSON.stringify(spec));
         const ctx = this.canvas.getContext("2d");
         if (ctx) {
             map.forEach((x, y, item) => {

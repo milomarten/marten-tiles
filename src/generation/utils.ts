@@ -64,6 +64,16 @@ export class CellMap<T> implements Grid<T> {
         }
     }
 
+    private normalizeXYForWrap(x: number, y: number): [number, number] {
+        if (x < 0) {
+            x = this.width + x;
+        }
+        if (y < 0) {
+            y = this.height + y;
+        }
+        return [x, y];
+    }
+
     getItem(x: number, y: number): T | null {
         if (x < 0 || y < 0 || x >= this.width || y >= this.height) {
             return null;
@@ -71,7 +81,17 @@ export class CellMap<T> implements Grid<T> {
         return this.contents[y * this.width + x];
     }
 
+    getItemWithWrap(x: number, y: number): T {
+        [x, y] = this.normalizeXYForWrap(x, y);
+        return this.contents[y * this.width + x];
+    }
+
     setItem(x: number, y: number, item: T): void {
+        this.contents[y * this.width + x] = item;
+    }
+
+    setItemWithWrap(x: number, y: number, item: T): void {
+        [x, y] = this.normalizeXYForWrap(x, y);
         this.contents[y * this.width + x] = item;
     }
 

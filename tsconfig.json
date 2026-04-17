@@ -17,5 +17,9 @@
     "incremental": true,
     "skipLibCheck": true
   },
+  "watchOptions": {
+    "watchFile": "fixedPollingInterval",
+    "watchDirectory": "fixedPollingInterval"
+  },
   "include": ["**/*.ts"]
 }
